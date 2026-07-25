@@ -1,0 +1,25 @@
+# --- data generation (implemented, these are all you need to run generate_dataset.py) ---
+pandas>=2.0
+numpy>=1.26
+
+# --- features / classical baseline models ---
+scikit-learn>=1.4
+scipy>=1.11
+
+# --- sequence-aware detection model (pick one backend when implementing) ---
+torch>=2.2
+# tensorflow>=2.16          # alternative to torch
+
+# --- explainability ---
+shap>=0.45
+
+# --- dashboard ---
+streamlit>=1.33
+plotly>=5.20
+
+# --- config / pipeline plumbing ---
+pyyaml>=6.0
+tqdm>=4.66
+
+# --- testing ---
+pytest>=8.0

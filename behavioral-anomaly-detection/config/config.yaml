@@ -1,0 +1,57 @@
+data_generation:
+  n_users: 150
+  n_service_accounts: 30
+  n_edge_devices: 40
+  n_days: 45
+  seed: 42
+  attack_campaign_counts:
+    brute_force: 8
+    impossible_travel: 40
+    credential_stuffing: 5
+    lateral_movement: 15
+    device_spoofing: 20
+    low_and_slow_exfiltration: 10
+    insider_drift_edge_cases: 8
+
+features:
+  # rolling windows for per-entity behavioural aggregates
+  windows: ["10m", "1h", "24h", "7d"]
+  categorical: [entity_type, auth_method, auth_result, resource_accessed, device_fingerprint]
+  geo_velocity: true          # km/h implied by consecutive sessions -> impossible-travel signal
+  novelty_flags: true         # "resource never seen for this entity before", etc.
+
+baseline_profiling:
+  method: one_class_svm       # options: statistical | one_class_svm | autoencoder
+  cold_start_fallback: role_level_prior   # score new entities against their entity_type's population profile
+
+sequence_detector:
+  architecture: gru           # options: lstm | gru | transformer
+  sequence_length: 20
+  hidden_size: 64
+  num_layers: 2
+  dropout: 0.2
+  batch_size: 128
+  epochs: 20
+  learning_rate: 0.001
+
+anomaly_classifier:
+  method: gradient_boosted_trees   # multi-class over anomaly_type given a flagged sequence
+  classes:
+    - anomaly_brute_force
+    - anomaly_impossible_travel
+    - anomaly_credential_stuffing
+    - anomaly_lateral_movement
+    - anomaly_device_spoofing
+    - anomaly_low_and_slow_exfil
+
+explainability:
+  method: shap
+  top_k_features: 5
+
+evaluation:
+  alert_budget_pct: 1.0       # analysts can review the top 1% of scored events
+  metrics: [pr_auc, precision_at_budget, recall_at_budget, per_class_f1]
+
+drift:
+  retrain_cadence_days: 14
+  profile_decay_halflife_days: 30   # older behaviour counts less toward "normal"
