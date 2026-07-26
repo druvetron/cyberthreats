@@ -2,6 +2,8 @@
 
 > AI/ML system that models "normal" access/connection behaviour for users, service accounts, and edge devices, detects intrusions or compromised-credential activity near real-time, classifies the anomaly type, and explains *why* an event was flagged — domain-agnostic across cloud, OT/edge, and IoT access logs.
 
+**🟢 Live SOC Dashboard:** [CyberThreats App](https://cyberthreats.streamlit.app/)
+
 ## 1. Project Deliverables Status
 
 | Deliverable | Status | Location |
