@@ -1,0 +1,10 @@
+pandas
+numpy
+scikit-learn
+pyyaml
+faker
+streamlit
+plotly
+shap
+torch
+joblib
