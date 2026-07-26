@@ -128,6 +128,10 @@ python -m src.pipeline.infer --config config/config.yaml
 streamlit run dashboard/app.py
 ```
 
-### Architecture
+### ARCHITECTURE
 
 ![System Architecture](architecture.png)
+
+### PIPELINE
+
+![System Pipeline](pipeline.png)
