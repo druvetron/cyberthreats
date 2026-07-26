@@ -131,3 +131,7 @@ streamlit run dashboard/app.py
 ### Architecture
 
 ![System Architecture](architecture.png)
+
+### PIPELINE
+
+![System Pipeline](pipeline.png)
