@@ -112,19 +112,35 @@ behavioral-anomaly-detection/
 ```
 ### Quickstart and execution
 ```text
-# 1. Install dependencies
+# 1. Clone the repository and navigate to the project root
+git clone https://github.com/druvetron/cyberthreats.git
+cd cyberthreats/behavioral-anomaly-detection
+
+# 2. Initialize and activate the virtual environment
+python -m venv venv
+
+# On macOS and Linux:
+source venv/bin/activate
+
+# On Windows (Command Prompt):
+# venv\Scripts\activate.bat
+# On Windows (PowerShell):
+# venv\Scripts\Activate.ps1
+
+# 3. Upgrade pip and install application dependencies
+pip install --upgrade pip
 pip install -r requirements.txt
 
-# 2. Generate synthetic data (creates the 3 required CSVs in data/)
+# 4. Generate synthetic data (creates the 3 required CSVs in data/)
 python -m src.data_generation.generate_dataset --n-days 45 --seed 42
 
-# 3. Train the GRU sequence detector and multi-class classifier end-to-end
+# 5. Train the GRU sequence detector and multi-class classifier end-to-end
 python -m src.pipeline.train --config config/config.yaml
 
-# 4. Score the raw/unlabeled stream and generate feature attributions
+# 6. Score the raw/unlabeled stream and generate feature attributions
 python -m src.pipeline.infer --config config/config.yaml
 
-# 5. Launch the Analyst Triage Dashboard
+# 7. Launch the Analyst Triage Dashboard
 streamlit run dashboard/app.py
 ```
 
