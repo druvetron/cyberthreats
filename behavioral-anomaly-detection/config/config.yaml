@@ -1,3 +1,9 @@
+paths:
+  raw_data: "data/raw/access_logs.csv"
+  labeled_data: "data/labeled/access_logs_labeled.csv"
+  reference_data: "data/reference/entity_profiles.csv"
+  model_dir: "models/"
+
 data_generation:
   n_users: 150
   n_service_accounts: 30
