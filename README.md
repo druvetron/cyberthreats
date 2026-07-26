@@ -1,27 +1,71 @@
-# 🛡️ AI-Powered Behavioral Anomaly Detection
+# Hackathon Technical Submission Report: AI-Powered Behavioral Anomaly Detection for Cybersecurity
 
-**Honeywell Cybersecurity Hackathon Submission**  
-**Team / Author:** druvetron
+## 1. Domain-Agnostic Behavioral Assumptions
+This implementation acts on the operational thesis that any connection signature, whether originating from an enterprise cloud server, an IoT smart hub, or an industrial Operational Technology (OT) edge gateway running fieldbus/Modbus encapsulations, leaves an unalterable behavioral sequence footprint.
 
-## Overview
-Traditional signature-based security fails against novel, low-and-slow, and credential-compromise intrusions. This repository contains a complete, domain-agnostic **User and Entity Behavior Analytics (UEBA)** system built to solve this. 
+Our architecture transitions away from brittle signature-based approaches toward a **Two-Stage Unsupervised Detection + Supervised Classification Engine**:
+* **Temporal Patterns:** Tracks multi-day cyclic trends to identify off-hours data extraction anomalies.
+* **Velocity Metrics:** Computes geodesic speed across successive geolocation identifiers to systematically expose impossible-travel events.
+* **Footprint Topology:** Identifies shifts in OS, MAC configurations, and communication sequences to flag active device spoofing maneuvers.
 
-Instead of relying on fixed rules, this AI/ML pipeline models the "normal" access and connection behavior for users, service accounts, and edge devices. It flags deviations in near real-time, classifies the specific attack taxonomy, and provides a human-readable explainability score for Security Operations Center (SOC) analysts.
+---
 
-## Key Capabilities
-* **Sequence-Aware Detection:** Utilizes a PyTorch GRU Autoencoder to evaluate rolling windows of behavior, catching complex temporal attacks like impossible travel and low-and-slow exfiltration.
-* **Multi-Class Threat Taxonomy:** A supervised Random Forest classifies flagged deviations into specific tactics (e.g., Brute Force, Lateral Movement, Credential Stuffing).
-* **Explainable AI (XAI):** Integrated SHAP `TreeExplainer` translates mathematical feature importance into plain English sentences (e.g., *"Flagged due to implausible travel/timing velocity"*).
-* **Cold-Start & Concept Drift Resilience:** Employs hierarchical role-based fallbacks for new devices and exponential time-decay moving averages for evolving legitimate behavior.
-* **SOC Analyst Dashboard:** A fully containerized Streamlit application for real-time alert triage, alert budgeting, and entity timeline investigations.
+## 2. Advanced Constraint Architecture Solutions
 
-## Repository Structure
+### A. Severe Class Imbalance Mitigation
+Real-world deployments isolate cyber threats within the top <1% of network logs. Relying on classic supervised classification causes severe majority-class bias. Our dual-stage pipeline isolates tracking:
+1. **Stage 1 (Detection):** Employs an unsupervised **PyTorch GRU Autoencoder** trained strictly on baseline benign behaviors. It maps multi-dimensional normal boundaries across temporal sequences, generating high reconstruction losses on anomalous entries without requiring prior knowledge of attack structures.
+2. **Stage 2 (Classification):** Leverages a lightweight, highly optimized **Multi-Class Random Forest** trained exclusively on the minority anomaly pool. This maps the deviations identified in Stage 1 directly to specific tactical classifications.
 
-As shown in the root directory, this project is organized as follows:
+### B. The Cold-Start Mitigation Strategy
+When a brand-new entity ID registers zero execution logs, it triggers false alarms due to the absence of historical reference nodes. 
+* Our framework addresses this through a **Hierarchical Fallback Architecture**. 
+* If a target `entity_id` is completely novel, inference calculations query the `entity_profiles.csv` to map the asset's structural class (`user`, `service_account`, `edge_device`). 
+* The system evaluates behavior against a cluster-wide **Population-Level Prior Profile** (via an Isolation Forest fallback) until the entity hits a warm-start history threshold of 50 connection sessions.
+
+### C. Concept Drift & Ambient Adaptive Tracking
+Legitimate behaviors naturally change as environments evolve (e.g., scheduled firmware updates, new remote work locations). 
+* To prevent baseline stagnation, stateful features utilize exponential time-decay moving averages for rolling behavioral baselines.
+* This allows the normal threshold boundary to adapt dynamically to routine behavioral variance without hardcoded manual recalibration.
+
+---
+
+## 3. System Architecture & Project Structure
+
+The pipeline is decoupled to ensure stateful streaming feature engineering can occur in near real-time before batched sequence evaluation.
+
+### Architecture Flow
+```text
+[ Raw Log Ingestion ] 
+        │
+        ▼
+[ Stateful Feature Engineering ] ── (Rolling Windows, Geo-Velocity, Exponential Decay)
+        │
+        ▼
+[ Stage 1: Unsupervised PyTorch GRU Autoencoder ] ── (Learns Baseline / Flags Temporal Deviations)
+        │
+        ├──> (If Cold Start) ──> [ Isolation Forest / Population Prior Fallback ]
+        │
+        ▼
+[ Stage 2: Supervised Random Forest ] ── (Classifies Deviation into specific Threat Taxonomy)
+        │
+        ▼
+[ Explainability Layer (SHAP) ] ── (Extracts mathematical drivers & translates to plain English)
+        │
+        ▼
+[ Streamlit SOC Dashboard ] ── (Real-time alert budgeting & triage queue)
+```
+
+###Key Repository Mapping
 
 ```text
-cyberthreats/
-├── behavioral-anomaly-detection/   # 🚀 MAIN PROJECT FOLDER (Source code, config, UI, Docker)
-├── access_logs_labeled.csv         # Generated synthetic training data (with ground truth)
-├── access_logs_unlabeled.csv       # Raw streaming data for inference testing
-└── entity_profiles.csv             # Baseline profiles for cold-start resolution
+cyberthreats/behavioral-anomaly-detection/
+├── src/data_generation/      # Handles synthetic attacks and baseline assumptions
+├── src/models/               # Contains GRU Detector, RF Classifier, & SHAP Explainability
+├── dashboard/app.py          # The Streamlit SOC Analyst UI
+└── config/                   # Hyperparameters for alert budgeting and drift decay
+```
+```text
+
+```
+
